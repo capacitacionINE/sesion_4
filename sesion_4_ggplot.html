@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Proceso de acompañamiento coyuntural y automatización de la Encuesta Nacional de Empleo</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="" />
+    <meta name="date" content="2020-08-05" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+
+class: center, middle
+
+.linea-superior[]
+.linea-inferior[]
+
+
+&lt;img src="imagenes/logo_portada2.png" width="200" /&gt;
+
+
+## Capacitación en R
+
+## Visualización usando ggplot
+
+### septiembre 2020
+
+
+
+
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Contenidos de hoy
+
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# La importancia de la visualización
+
+La visualización juega un rol importante en las etapas del análisis de datos:
+
+- Exploración
+
+- Modelamiento
+
+- Diagnóstico
+
+--
+
+*"The simple graph has brought more information to the data analyst's mind than any other device."* - [John Tukey](https://es.wikipedia.org/wiki/John_W._Tukey)
+
+
+
+--
+
+**Los gráficos nos permiten comunicar y atraer la atención de una audiencia**: [The Joy of Stats](https://www.youtube.com/watch?v=V8lbiiTF2P0)
+
+???
+Los principales objetivos de los gráficos en estadística son: 
+i) facilitar comparaciones
+ii) identificar tendencias
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# La importancia de la visualización
+
+## [John Snow](https://es.wikipedia.org/wiki/John_Snow) es considerado el padre de la epidemiología 
+
+&lt;img src="imagenes/snow.png" width="800" /&gt;
+
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# La importancia de la visualización
+
+## [Matejka &amp; Fitzmaurice, 2017](https://www.autodeskresearch.com/publications/samestats) 
+
+.center[
+&lt;img src="https://raw.githubusercontent.com/rweekly/image/master/2017-03/AllDinosGrey_1_scale.png" width="700" /&gt;
+]
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# La importancia de la visualización
+
+
+
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Visualizaciones no efectivas
+
+--
+
+.center[
+&lt;img src="https://pbs.twimg.com/media/DXrZuSfX0AEjqtM.jpg" width="650" /&gt;
+]
+
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Visualizaciones no efectivas
+
+.center[
+&lt;img src="imagenes/obamacare.PNG" width="800" /&gt;
+]
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Visualizaciones no efectivas
+
+![](http://3.bp.blogspot.com/-91nBt0UagvM/VMd0gEHuicI/AAAAAAAAKcw/XNyCOWp_JFI/s1600/pie1.jpg)
+
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+
+# Visualización efectiva
+
+Los gráficos requieren de nuestra capacidad visual para interpretar figuras geométricas.
+
+--
+
+[Cleveland &amp; McGuill (1985)](http://webspace.ship.edu/pgmarr/Geo441/Readings/Cleveland%20and%20McGill%201985%20-%20Graphical%20Perception%20and%20Graphical%20Methods%20for%20Analyzing%20Scientific%20Data.pdf)
+
+- Las mejores visualizaciones son aquellas que requieren el uso de la "visión instantánea".
+
+- Y no requieren de un esfuerzo visual para ser comprendidas.
+
+--
+
+.center[La "visión instantánea" nos permite evaluar visualmente **patrones geométricos** y dimensionar **magnitudes**]
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Visualización efectiva
+
+Cleveland ordena la dificultad de los elementos gráficos basado en la percepción para estimar variables cuantitativas.
+
+--
+
+De menor a mayor dificultad:
+
+- **Posición** a lo largo de una escala común
+- **Posición** en escalas no alineadas pero idénticas
+- Longitud
+- Ángulo o pendiente
+- Área
+- Volumen, densidad o saturación del color
+- Tono del color
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+
+# Visualización efectiva
+
+&lt;img src="imagenes/clplot.png" width="700px" height="290px" style="display: block; margin: auto;" /&gt;
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Visualización efectiva
+
+## Las tortas son para comer...
+
+--
+
+## [*Three reasons that pie charts suck*](https://www.richardhollins.com/blog/why-pie-charts-suck/)
+
+.pull-left[
+
+1. Son malos para comunicar lo básico, a menos que tengan etiquetas.
+
+2. No son buenos para mostrar tendencias (aun cuando lo acompañen etiquetas).
+
+3. No sirven para mostrar tendencias cuando se utilizan valores absolutos.
+]
+
+.pull-right[![](https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Piecharts.svg/2000px-Piecharts.svg.png)
+]
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Principios generales (para hacer malos gráficos)
+
+- Muestra la menor cantidad de información posible (no es posible leer el gráfico sin leer el texto que lo acompaña).
+
+--
+
+- Confunde a los demás respecto a lo que quieres mostrar (con etiquetas que no explican nada o características que no agregan información).
+
+--
+
+- Usa un gráfico de torta (con efectos 3d).
+
+--
+
+- Si comparas más de un gráfico, ojalá utiliza distintas escalas.
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Ejemplo
+
+## A partir de los conceptos revisados, ¿qué podemos decir de esta visualización?
+
+.center[
+&lt;img src="imagenes/babyboomers.PNG" width="600" /&gt;
+]
+
+
+---
+
+class: center, middle
+
+.linea-superior[]
+.linea-inferior[]
+&lt;img src="imagenes/logo_portada2.png" width="200" /&gt;
+
+
+
+## Gracias
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
