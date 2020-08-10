@@ -4,7 +4,7 @@
     <title>Proceso de acompañamiento coyuntural y automatización de la Encuesta Nacional de Empleo</title>
     <meta charset="utf-8" />
     <meta name="author" content="" />
-    <meta name="date" content="2020-08-05" />
+    <meta name="date" content="2020-08-10" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
   <body>
@@ -40,6 +40,12 @@ background-position: 100% 0%
 
 # Contenidos de hoy
 
+- Conceptos básicos de visualización
+
+--
+
+- Elementos básicos de ggplot  
+
 
 
 ---
@@ -56,7 +62,7 @@ La visualización juega un rol importante en las etapas del análisis de datos:
 
 - Modelamiento
 
-- Diagnóstico
+- Comunicación
 
 --
 
@@ -100,16 +106,6 @@ background-position: 100% 0%
 &lt;img src="https://raw.githubusercontent.com/rweekly/image/master/2017-03/AllDinosGrey_1_scale.png" width="700" /&gt;
 ]
 
----
-
-background-image: url("imagenes/fondo2.PNG")
-background-size: contain;
-background-position: 100% 0%
-
-# La importancia de la visualización
-
-
-
 
 
 ---
@@ -120,7 +116,6 @@ background-position: 100% 0%
 
 # Visualizaciones no efectivas
 
---
 
 .center[
 &lt;img src="https://pbs.twimg.com/media/DXrZuSfX0AEjqtM.jpg" width="650" /&gt;
@@ -151,6 +146,30 @@ background-position: 100% 0%
 
 ![](http://3.bp.blogspot.com/-91nBt0UagvM/VMd0gEHuicI/AAAAAAAAKcw/XNyCOWp_JFI/s1600/pie1.jpg)
 
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Visualización efectiva
+
+## Variables para mostrar atributos (Ward, Grinstein &amp; Keim, 2015, Interactive Data Visualization)
+
+
+- Posición
+- Marca
+- Tamaño
+- Brillo
+- Color
+- Orientación
+- Textura
+- Movimiento
+- Efecto de las variables visuales
+
+--
+
+## No es aconsejable incluir demasiados atributos en una misma visualización
 
 
 ---
@@ -194,10 +213,13 @@ De menor a mayor dificultad:
 - Longitud
 - Ángulo o pendiente
 - Área
-- Volumen, densidad o saturación del color
+- Saturación del color
 - Tono del color
 
+
 ---
+
+
 
 background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
@@ -240,13 +262,13 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Principios generales (para hacer malos gráficos)
+# Receta para hacer ~~malos~~ gráficos
 
-- Muestra la menor cantidad de información posible (no es posible leer el gráfico sin leer el texto que lo acompaña).
+- Confunde a los demás respecto a lo que quieres mostrar (con etiquetas que no explican nada o características que no agregan información).
 
 --
 
-- Confunde a los demás respecto a lo que quieres mostrar (con etiquetas que no explican nada o características que no agregan información).
+- Incluye muchos atributos (posición, color, tamaño, textura, forma)
 
 --
 
@@ -254,7 +276,21 @@ background-position: 100% 0%
 
 --
 
+- Incluye más de una escala en un mismo gráfico
+
+--
+
 - Si comparas más de un gráfico, ojalá utiliza distintas escalas.
+
+--
+
+.center[
+&lt;img src="https://media.giphy.com/media/eJX4NrE7T9yhgvqXKX/giphy.gif" width="400" /&gt;
+]
+
+
+
+
 
 ---
 
@@ -272,7 +308,751 @@ background-position: 100% 0%
 
 
 ---
+.linea-superior[]
+.linea-inferior[]
 
+
+.center[
+## Ahora que ya manejamos algunos conceptos, podemos pasar a `R`
+
+
+&lt;img src="https://media.giphy.com/media/b5LTssxCLpvVe/giphy.gif" width="750" /&gt;
+]
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Descripción del dataset 
+
+Trabajaremos con un dataset de nombres inscritos en el registro civil
+
+--
+
+Los datos se encuentran en el paquete guaguas de [Riva Quiroga](https://github.com/rivaquiroga/guaguas)
+
+.center[
+&lt;img src="https://raw.githubusercontent.com/rivaquiroga/guaguas/master/man/figures/guaguas-hex.png" width="100" /&gt;
+]
+
+--
+
+
+
+```r
+#install.packages("guaguas")
+library(guaguas)
+head(guaguas, 2)
+```
+
+```
+## # A tibble: 2 x 5
+##    anio sexo  nombre     n proporcion
+##   &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;int&gt;      &lt;dbl&gt;
+## 1  1920 F     María   2128     0.105 
+## 2  1920 M     José     982     0.0482
+```
+
+--
+
+### Generemos un gráfico de barras con cantidad de nombres de mujeres y de hombres
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Gráficos en R 
+
+R base ofrece herramientas de visualización
+
+--
+
+
+
+
+
+```r
+plot(pressure)
+```
+
+&lt;img src="sesion_4_ggplot_files/figure-html/pressure-1.png" style="display: block; margin: auto;" /&gt;
+
+--
+
+Entonces, ¿por qué utilizar ggplot? 
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Gráficos en R 
+
+
+`ggplot2` sigue una sintaxis coherente, lo que facilita su aprendizaje
+
+
+
+```r
+library(ggplot2)
+ggplot(data = pressure) + 
+          geom_point(mapping = aes(x = temperature, y = pressure))
+```
+
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-3-1.png" style="display: block; margin: auto;" /&gt;
+
+--
+
+`ggplot2` se ha convertido en el estándar para la visualización en R
+
+Estilo sobrio y elegante
+
+Hay librerías en python que usan el diseño de ggplot 
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Volvamos a nuestros datos
+
+Queremos un gráfico de barras que nos muestre cantidad de nombres por sexo
+
+Echaremos mano a lo aprendido en sesiones anteriores
+
+--
+
+
+```r
+library(tidyverse)
+sexo &lt;- guaguas %&gt;% 
+  group_by(sexo) %&gt;% 
+  summarise(suma = sum(n))
+
+sexo
+```
+
+```
+## # A tibble: 2 x 2
+##   sexo      suma
+##   &lt;chr&gt;    &lt;int&gt;
+## 1 F      9805797
+## 2 M     10431707
+```
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# La sintaxis de ggplot
+
+`ggplot` funciona con un sistema de capas
+
+Siempre comenzaremos con la función ggplot
+
+--
+
+
+```r
+ggplot(data = sexo, aes(x = sexo, y = suma)) 
+```
+
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-5-1.png" style="display: block; margin: auto;" /&gt;
+--
+
+* `data`: tabla para la cual queremos generar el gráfico
+
+* `aes`: viene de *aesthetics*. Contiene los elementos estéticos de nuestro gráfico
+
+    + `x`: variable que será mapeada al eje x 
+    + `y`: variable que será mapeada al eje y
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# La sintaxis de ggplot
+
+
+
+```r
+ggplot(data = sexo, aes(x = sexo, y = suma)) + 
+* geom_bar(stat = "identity")
+```
+
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-6-1.png" style="display: block; margin: auto;" /&gt;
+
+--
+
+- `geom_bar`: capa de figura geométrica 
+
+- *identity*: le dice a ggplot que no queremos hacer nada con los datos, es decir, graficar la tabla sin modificaciones 
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# La sintaxis de ggplot
+
+Agreguemos una segunda capa
+
+
+```r
+ggplot(data = sexo, aes(x = sexo, y = suma)) + 
+  geom_bar(stat = "identity") + 
+* geom_hline(yintercept = mean(sexo$suma))
+```
+
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-7-1.png" style="display: block; margin: auto;" /&gt;
+
+--
+
+- `geom_hline`: línea horizontal 
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Ejercicio rápido
+
+Creemos un gráfico de líneas que contenga la suma de personas para cada año
+
+*Pista*: la capa para crear un gráfico de líneas es `geom_line` 
+
+--
+
+
+```r
+guaguas %&gt;% 
+  group_by(anio) %&gt;% 
+  summarise(suma = sum(n)) %&gt;% 
+  ggplot(aes(x = anio, y = suma)) +
+* geom_line()
+```
+
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-8-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Agregando más atributos
+
+Nombres de mujer más populares de 2019
+
+
+```r
+top3 &lt;- guaguas %&gt;% 
+  filter(anio == 2019 &amp; sexo == "F") %&gt;% 
+  group_by(sexo) %&gt;% 
+  arrange(desc(n)) %&gt;% 
+  slice(1:10)
+*ggplot(top3, aes(x =  fct_reorder(nombre, desc(n)) , y = n, fill = nombre)) +
+  geom_bar(stat = "identity")
+```
+
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-9-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Agregando más atributos
+
+Con la función `labs` podemos agregar etiquetas a nuestro gráfico
+
+La función `theme` controla características generales del gráfico: fuente, posición, tamaño de letra, etc. 
+
+
+
+```r
+guaguas %&gt;% 
+  filter(nombre == "Salvador" &amp; anio &lt;= 1990) %&gt;% 
+  ggplot(aes(x = anio, y = n, color = "coral")) +
+  geom_line() +
+  geom_vline(xintercept = 1971, linetype="dashed") +
+* labs(title="El nombre Salvador a lo largo de la historia",
+*       x ="año", y = "frecuencia") +
+* theme(plot.title = element_text(hjust = 0.5))
+```
+
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-10-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Agregando más atributos y capas
+
+
+```r
+guaguas %&gt;% 
+  filter(nombre %in% c("Milenka", "Branco", "Salomé", "Jovanka"), anio &gt; 1980) %&gt;% 
+* ggplot(aes(anio, n, color = nombre)) +
+* geom_point() +
+  geom_line() +
+  labs(x = "año", y = "total inscripciones",
+       title = "Inscripciones de nombres de personajes de Romané") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+```
+
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-11-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Segundo dataset
+
+Base de datos que contiene datos de pib y esperanza de vida
+
+
+```r
+life &lt;-  gapminder::gapminder
+head(life, 10)
+```
+
+```
+## # A tibble: 10 x 6
+##    country     continent  year lifeExp      pop gdpPercap
+##    &lt;fct&gt;       &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
+##  1 Afghanistan Asia       1952    28.8  8425333      779.
+##  2 Afghanistan Asia       1957    30.3  9240934      821.
+##  3 Afghanistan Asia       1962    32.0 10267083      853.
+##  4 Afghanistan Asia       1967    34.0 11537966      836.
+##  5 Afghanistan Asia       1972    36.1 13079460      740.
+##  6 Afghanistan Asia       1977    38.4 14880372      786.
+##  7 Afghanistan Asia       1982    39.9 12881816      978.
+##  8 Afghanistan Asia       1987    40.8 13867957      852.
+##  9 Afghanistan Asia       1992    41.7 16317921      649.
+## 10 Afghanistan Asia       1997    41.8 22227415      635.
+```
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Segundo dataset
+
+Veamos cuál es la relación entre ingreso y esperanza de vida 
+
+
+```r
+life &lt;-  gapminder::gapminder %&gt;% 
+  filter(year == 2007)
+
+ggplot(life, aes(x = lifeExp, y = log(gdpPercap)) ) + 
+  geom_point()
+```
+
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-13-1.png" style="display: block; margin: auto;" /&gt;
+
+Aplicamos una transformación logarítmica para obtener una mejor visualización
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Ejercicio rápido
+
+Agreguemos una variable para indicar el continente de cada país
+
+*Pista*: 1) la columna continent contiene esta información. La variable `color` puede ser de ayuda 
+
+--
+
+
+```r
+ggplot(life, aes(x = lifeExp, y = log(gdpPercap), color = continent) ) + 
+  geom_point()
+```
+
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-14-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Ejercicio rápido
+
+Agreguemos otra variable para indicar la población de cada país
+
+*Pista*: La variable `size` puede ser de gran ayuda
+
+--
+
+
+```r
+ggplot(life, aes(x = lifeExp, y = log(gdpPercap), color = continent, size = pop) ) + 
+  geom_point() +
+  scale_size(range = c(1, 7))
+```
+
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-15-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Problema: los puntos se superponen
+
+* Tenemos, al menos, dos soluciones
+    + Usar transparencia
+    + Jitter
+
+
+```r
+ggplot(life, aes(x = lifeExp, y = log(gdpPercap), color = continent, size = pop) ) + 
+  geom_point(alpha = 0.6) +
+  scale_size(range = c(1, 7))
+```
+
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-16-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Problema: los puntos se superponen
+
+
+
+```r
+ggplot(life, aes(x = lifeExp, y = log(gdpPercap), color = continent, size = pop) ) + 
+  geom_point() +
+  geom_jitter(width = 0.3) +
+  scale_size(range = c(1, 7))
+```
+
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-17-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Paneles separados
+
+Con `facet_wrap` generamos un panel para cada categoría de la variable
+
+
+```r
+ggplot(life, aes(x = lifeExp, y = log(gdpPercap), color = continent, size = pop) ) + 
+  geom_point() +
+  scale_size(range = c(1, 7)) +
+* facet_wrap(~continent)
+```
+
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-18-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Ejercicio rápido
+
+Seleccionemos los años 1992, 1997, 2002, 2007 y generemos un gráfico con facetas para cada uno de dichos años
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Ejercicio rápido (respuesta)
+
+
+
+
+```r
+gapminder::gapminder %&gt;% 
+  filter(year %in% c(1992, 1997, 2002, 2007)) %&gt;% 
+  ggplot(aes(x = lifeExp, y = log(gdpPercap), color = continent, size = pop) ) + 
+  geom_point() +
+  scale_size(range = c(1, 7)) +
+* facet_wrap(~year)
+```
+
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-19-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Resumen
+
+* Figuras revisadas en la clase
+  + `geom_bar`
+  + `geom_point`
+  + `geom_line`
+  + `geom_vline`
+  + `geom_hline`
+
+* Más figuras
+  + `geom_text`
+  + `geom_segment`
+  + `geom_boxplot`
+  + `geom_polygon`
+  + `geom_density`
+
+Memorizar las funciones es una mala estrategia para mejorar en ggplot 
+
+--
+
+Debemos preocuparnos de 2 cosas:
+
+1. Entender la sintaxis de ggplot
+
+2. Aprender a buscar rápidamente en internet lo que necesitamos
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# gganimate (bonus)
+
+En nuestras visualizaciones la variable tiempo no se aprecia tan bien
+
+Podemos incluir movimiento para mejorar la percepción de cómo cambia la relación entre pib y esperanza de vida a lo largo del tiempo
+
+
+
+```r
+#install.packages("gifski")
+library(gganimate)
+p &lt;- ggplot(gapminder::gapminder, aes(gdpPercap, lifeExp, 
+                           color = continent)) +
+  geom_point(aes(size = pop), show.legend = FALSE) +
+  scale_y_continuous(breaks = seq(20,90,10)) +
+  scale_size(range = c(2,12)) + 
+  scale_x_log10() +
+* transition_states(year) +
+* labs(title = 'Año: {closest_state}', x = 'pib p/c', y = 'esperanza de vida') +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# gganimate
+
+
+```r
+animate(p, renderer = gifski_renderer(), fps=10)
+```
+
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-21-1.gif" style="display: block; margin: auto;" /&gt;
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Más ejemplos para motivar
+
+
+.center[
+&lt;img src="https://klauslehmann.netlify.app/img/inflacion.gif" width="800" /&gt;
+]
+
+[EPF-D3partitionR](https://klauslehmann.netlify.app/2019/07/07/en-qu%C3%A9-gastan-los-hogares-chilenos/)
+
+[EPF-shiny](https://klaus-lehmann.shinyapps.io/epf-app/?_ga=2.98503452.206060216.1596836306-1258237829.1596836306)
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Más ejemplos para motivar
+
+
+.center[
+&lt;img src="imagenes/mapa_no_res.PNG" width="550" /&gt;
+]
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Para seguir aprendiendo...
+
+[Elegant Graphics for Data Analysis (Hadly Wickham)](https://ggplot2-book.org/index.html)
+
+[Tutorial muy claro de ggplot](http://r-statistics.co/Complete-Ggplot2-Tutorial-Part1-With-R-Code.html)
+
+[Tutorial y documentación de gganimate de los desarroladores](https://gganimate.com/)
+
+[Mastering Shiny (Hadley Wickham)](https://mastering-shiny.org/index.html)
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Tarea para la casa
+
+Vamos a trabajar con datos de la EPF 
+
+La idea es practicar calculando algunos datos no representativos. 
+
+--
+
+.red[WARNING] datos no representativos .red[WARNING]
+
+
+--
+
+Tendrán un código que prepara la base de datos para hacer los ejercicios. Sería muy útil que se detuvieran un instante a entender cómo funciona.
+
+--
+
+**Tarea 1**: Construir un gráfico que muestre el ingreso y el gasto p/c promedio, según quintil de ingreso.
+
+**Tarea 2**: Construir un gráfico que muestre el ingreso y el gasto p/c promedio, según sexo del jefe de hogar.
+
+**Tarea 3**: Construir un gráfico que muestre el ingreso y el gasto p/c promedio, según zona (Metropolitina y resto de capitales regionales).
+
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Código auxiliar
+
+
+```r
+options(scipen = "999") #para eliminar notación científica
+
+#Abrir base de la epf
+epf &lt;- read.delim("data/base-personas-viii-epf-(formato-csv).csv", sep = ";" )
+names(epf) &lt;- tolower(names(epf)) #pasar a minúscula
+
+#Reemplazar las comas por punto
+epf2 &lt;- epf %&gt;% 
+  select(gastot_hd_pc, ing_disp_hog_hd_pc, zona =  ï..zona, jhogar, sexo) %&gt;% 
+  mutate_at(vars(gastot_hd_pc, ing_disp_hog_hd_pc), funs(as.numeric(gsub(pattern = ",", replacement = ".", x = .)) )) %&gt;% 
+  filter(jhogar == 1) #dejar un registro por hogar
+
+#Calcular los puntos de corte para los quintiles  
+quintiles &lt;- quantile(x = epf2$ing_disp_hog_hd_pc, c(0, 0.2, 0.4, 0.6, 0.8, 1)) 
+
+#Crear la variable quintil.
+epf2 &lt;- epf2 %&gt;% 
+  mutate(quintil =  case_when(
+    ing_disp_hog_hd_pc &lt;= quintiles[2] ~ "quntil1",
+    ing_disp_hog_hd_pc &lt;= quintiles[3] ~ "quntil2",
+    ing_disp_hog_hd_pc &lt;= quintiles[4] ~ "quntil3",
+    ing_disp_hog_hd_pc &lt;= quintiles[5] ~ "quntil4",
+    ing_disp_hog_hd_pc &lt;= quintiles[6] ~ "quntil5")
+)
+
+#Comprobar que los quintiles estén bien armados
+#prop.table(table(epf2$quintil))
+```
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Pistas para la tarea
+
+
+**Pista 1**: Antes de graficar, debes preparar los datos y llevarlos a una estructura *tidy*. Usar la función `pivot_longer` es una buena idea.
+
+
+```
+## # A tibble: 10 x 3
+##    quintil tipo                  valor
+##    &lt;chr&gt;   &lt;chr&gt;                 &lt;dbl&gt;
+##  1 quntil1 gastot_hd_pc        158393.
+##  2 quntil1 ing_disp_hog_hd_pc   83300.
+##  3 quntil2 gastot_hd_pc        205319.
+##  4 quntil2 ing_disp_hog_hd_pc  163202.
+##  5 quntil3 gastot_hd_pc        266283.
+##  6 quntil3 ing_disp_hog_hd_pc  249211.
+##  7 quntil4 gastot_hd_pc        406117.
+##  8 quntil4 ing_disp_hog_hd_pc  407265.
+##  9 quntil5 gastot_hd_pc        911707.
+## 10 quntil5 ing_disp_hog_hd_pc 1201545.
+```
+
+**Pista 2**: Para generar varias columnas en una misma categoría, puedes usar el argumento `position = "dodge"` dentro de `geom_bar`
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+#Ejercicio 1
+
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-24-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Ejercicio 2
+
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-25-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Ejercicio 3
+
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-26-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
 class: center, middle
 
 .linea-superior[]
