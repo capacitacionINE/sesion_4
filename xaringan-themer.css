@@ -303,6 +303,9 @@ table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
   color: red;
 }
 
+.blue{
+  color: blue;
+}
 
 .caja {
   width: 600px;
@@ -318,6 +321,12 @@ table,  td {
   background-color: white;
   padding: 1px;
 }
+
+
+.small .remark-code  {
+  font-size: 60%;  
+}
+
 
 
 /*

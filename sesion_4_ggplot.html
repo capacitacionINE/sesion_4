@@ -4,7 +4,7 @@
     <title>Proceso de acompañamiento coyuntural y automatización de la Encuesta Nacional de Empleo</title>
     <meta charset="utf-8" />
     <meta name="author" content="" />
-    <meta name="date" content="2020-08-10" />
+    <meta name="date" content="2020-09-20" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
   <body>
@@ -357,7 +357,7 @@ head(guaguas, 2)
 
 --
 
-### Generemos un gráfico de barras con cantidad de nombres de mujeres y de hombres
+### Generemos un gráfico de barras con la cantidad de mujeres y hombres
 
 
 ---
@@ -486,6 +486,7 @@ background-position: 100% 0%
 
 
 ```r
+options(scipen = "999")
 ggplot(data = sexo, aes(x = sexo, y = suma)) + 
 * geom_bar(stat = "identity")
 ```
@@ -497,6 +498,78 @@ ggplot(data = sexo, aes(x = sexo, y = suma)) +
 - `geom_bar`: capa de figura geométrica 
 
 - *identity*: le dice a ggplot que no queremos hacer nada con los datos, es decir, graficar la tabla sin modificaciones 
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# ¿Qué es exactamente identity?
+
+.center[
+&lt;img src="https://media.giphy.com/media/a5viI92PAF89q/giphy.gif" width="200" /&gt;
+]
+
+--
+
+`geom_bar` por defecto llama a la función `stat_count`
+
+`stat_count` espera como input una sola variable 
+
+
+
+```r
+ggplot(data = sexo, aes(x = sexo, y = suma)) + 
+  geom_bar()
+```
+
+```
+## Error: stat_count() can only have an x or y aesthetic.
+```
+
+![](sesion_4_ggplot_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Un poco más sobre identity
+
+¿Qué creen que está pasando acá?
+
+
+```r
+ggplot(data = sexo, aes(x = sexo)) + 
+  geom_bar()
+```
+
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-8-1.png" style="display: block; margin: auto;" /&gt;
+
+--
+
+El problema es que nuestra base de datos no está ordenada de ese modo
+
+
+```r
+guaguas %&gt;% 
+  filter(nombre == "Juan" &amp; anio == 2010)
+```
+
+```
+*## # A tibble: 1 x 5
+##    anio sexo  nombre     n proporcion
+*##   &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;int&gt;      &lt;dbl&gt;
+## 1  2010 M     Juan    1707    0.00650
+```
+
+
+Tenemos para cada nombre un conteo. Ejemplo: María, 300  
+
 
 ---
 
@@ -512,10 +585,10 @@ Agreguemos una segunda capa
 ```r
 ggplot(data = sexo, aes(x = sexo, y = suma)) + 
   geom_bar(stat = "identity") + 
-* geom_hline(yintercept = mean(sexo$suma))
+* geom_hline(aes(yintercept = mean(suma)) )
 ```
 
-&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-7-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-10-1.png" style="display: block; margin: auto;" /&gt;
 
 --
 
@@ -544,7 +617,7 @@ guaguas %&gt;%
 * geom_line()
 ```
 
-&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-8-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-11-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 background-image: url("imagenes/fondo2.PNG")
@@ -557,16 +630,16 @@ Nombres de mujer más populares de 2019
 
 
 ```r
-top3 &lt;- guaguas %&gt;% 
+top10 &lt;- guaguas %&gt;% 
   filter(anio == 2019 &amp; sexo == "F") %&gt;% 
   group_by(sexo) %&gt;% 
   arrange(desc(n)) %&gt;% 
   slice(1:10)
-*ggplot(top3, aes(x =  fct_reorder(nombre, desc(n)) , y = n, fill = nombre)) +
+*ggplot(top10, aes(x =  fct_reorder(nombre, desc(n)) , y = n, fill = nombre)) +
   geom_bar(stat = "identity")
 ```
 
-&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-9-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-12-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -593,7 +666,177 @@ guaguas %&gt;%
 * theme(plot.title = element_text(hjust = 0.5))
 ```
 
-&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-10-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-13-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Un poco más sobre theme
+
+Existen variables internas que nos permiten acceder a los elementos del gráfico
+
+--
+
+Con `element_text` podemos modificar varias cosas
+
+.pull-left[
+
+
+.small[
+
+```r
+guaguas::guaguas %&gt;% 
+  filter(nombre == "Salvador" &amp; anio &lt;= 1990) %&gt;% 
+  ggplot(aes(x = anio, y = n, color = "coral")) +
+  geom_line() +
+  geom_vline(xintercept = 1971, linetype="dashed") +
+  labs(title="El nombre Salvador a lo largo de la historia",
+        x ="año", y = "frecuencia") + 
+* theme(plot.title = element_text(hjust = 0.5),
+*       axis.text.x = element_text(angle = 90))
+```
+]
+
+]
+
+.pull-right[
+![](sesion_4_ggplot_files/figure-html/plot-label-out-1.png)&lt;!-- --&gt;
+]
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+  
+# Un poco más sobre theme
+
+.pull-left[
+.small[
+
+```r
+guaguas %&gt;% 
+  filter(nombre == "Salvador" &amp; anio &lt;= 1990) %&gt;% 
+  ggplot(aes(x = anio, y = n, color = "coral")) +
+  geom_line() +
+  geom_vline(xintercept = 1971, linetype="dashed") +
+  labs(title="El nombre Salvador a lo largo de la historia",
+      x ="año", y = "frecuencia") + 
+  theme(plot.title = element_text(hjust = 0.5), 
+       axis.text.x = element_text(angle = 90),
+*      axis.title.x = element_text(color = "red"))
+```
+]
+]
+
+.pull-right[
+![](sesion_4_ggplot_files/figure-html/plot-label2-out-1.png)&lt;!-- --&gt;
+]
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+  
+# Un poco más sobre theme
+
+.pull-left[
+.small[
+
+```r
+guaguas %&gt;% 
+  filter(nombre == "Salvador" &amp; anio &lt;= 1990) %&gt;% 
+  ggplot(aes(x = anio, y = n, color = "coral")) +
+  geom_line() +
+  geom_vline(xintercept = 1971, linetype="dashed") +
+  labs(title="El nombre Salvador a lo largo de la historia",
+       x ="año", y = "frecuencia") + 
+  theme(plot.title = element_text(hjust = 0.5), 
+        axis.text.x = element_text(angle = 90),
+        axis.title.x = element_text(color = "red"),
+*       axis.text.y = element_text(face = "bold.italic"))
+```
+]
+]
+
+
+.pull-right[
+![](sesion_4_ggplot_files/figure-html/plot-label3-out-1.png)&lt;!-- --&gt;
+]
+
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+  
+# Un poco más sobre theme
+
+.pull-left[
+.small[
+
+```r
+  guaguas %&gt;% 
+    filter(nombre == "Salvador" &amp; anio &lt;= 1990) %&gt;% 
+    ggplot(aes(x = anio, y = n, color = "coral")) +
+    geom_line() +
+    geom_vline(xintercept = 1971, linetype="dashed") +
+    labs(title="El nombre Salvador a lo largo de la historia",
+         x ="año", y = "frecuencia") + 
+    theme(plot.title = element_text(hjust = 0.5), 
+          axis.text.x = element_text(angle = 90),
+          axis.title.x = element_text(color = "red"),
+          axis.text.y = element_text(face = "bold.italic"),
+*         legend.position = "none")
+```
+  ]
+]
+
+
+.pull-right[
+![](sesion_4_ggplot_files/figure-html/plot-label4-out-1.png)&lt;!-- --&gt;
+]
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+  
+# Un poco más sobre theme
+
+.pull-left[
+.small[
+
+```r
+  guaguas %&gt;% 
+    filter(nombre == "Salvador" &amp; anio &lt;= 1990) %&gt;% 
+    ggplot(aes(x = anio, y = n, color = "coral")) +
+    geom_line() +
+    geom_vline(xintercept = 1971, linetype="dashed") +
+    labs(title="El nombre Salvador a lo largo de la historia",
+         x ="año", y = "frecuencia") + 
+    theme(plot.title = element_text(hjust = 0.5), 
+          axis.text.x = element_text(angle = 90),
+          axis.title.x = element_text(color = "red"),
+          axis.text.y = element_text(face = "bold.italic"),
+*         legend.position =  "bottom",
+*         legend.background = element_rect(fill = "darkgray") )
+```
+  ]
+]
+
+
+.pull-right[
+![](sesion_4_ggplot_files/figure-html/plot-label5-out-1.png)&lt;!-- --&gt;
+]
+
+
 
 
 ---
@@ -607,7 +850,7 @@ background-position: 100% 0%
 
 ```r
 guaguas %&gt;% 
-  filter(nombre %in% c("Milenka", "Branco", "Salomé", "Jovanka"), anio &gt; 1980) %&gt;% 
+  filter(nombre %in% c("Milenka", "Branco", "Salomé", "Jovanka") &amp; anio &gt; 1980) %&gt;% 
 * ggplot(aes(anio, n, color = nombre)) +
 * geom_point() +
   geom_line() +
@@ -616,7 +859,7 @@ guaguas %&gt;%
   theme(plot.title = element_text(hjust = 0.5)) 
 ```
 
-&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-11-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-14-1.png" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -669,7 +912,7 @@ ggplot(life, aes(x = lifeExp, y = log(gdpPercap)) ) +
   geom_point()
 ```
 
-&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-13-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-16-1.png" style="display: block; margin: auto;" /&gt;
 
 Aplicamos una transformación logarítmica para obtener una mejor visualización
 
@@ -692,7 +935,7 @@ ggplot(life, aes(x = lifeExp, y = log(gdpPercap), color = continent) ) +
   geom_point()
 ```
 
-&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-14-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-17-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 background-image: url("imagenes/fondo2.PNG")
@@ -714,7 +957,7 @@ ggplot(life, aes(x = lifeExp, y = log(gdpPercap), color = continent, size = pop)
   scale_size(range = c(1, 7))
 ```
 
-&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-15-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-18-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 background-image: url("imagenes/fondo2.PNG")
@@ -734,7 +977,7 @@ ggplot(life, aes(x = lifeExp, y = log(gdpPercap), color = continent, size = pop)
   scale_size(range = c(1, 7))
 ```
 
-&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-16-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-19-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 background-image: url("imagenes/fondo2.PNG")
@@ -752,7 +995,7 @@ ggplot(life, aes(x = lifeExp, y = log(gdpPercap), color = continent, size = pop)
   scale_size(range = c(1, 7))
 ```
 
-&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-17-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-20-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 background-image: url("imagenes/fondo2.PNG")
@@ -771,7 +1014,7 @@ ggplot(life, aes(x = lifeExp, y = log(gdpPercap), color = continent, size = pop)
 * facet_wrap(~continent)
 ```
 
-&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-18-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-21-1.png" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -802,7 +1045,7 @@ gapminder::gapminder %&gt;%
 * facet_wrap(~year)
 ```
 
-&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-19-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-22-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 background-image: url("imagenes/fondo2.PNG")
@@ -874,7 +1117,7 @@ background-position: 100% 0%
 animate(p, renderer = gifski_renderer(), fps=10)
 ```
 
-&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-21-1.gif" style="display: block; margin: auto;" /&gt;
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-24-1.gif" style="display: block; margin: auto;" /&gt;
 
 ---
 background-image: url("imagenes/fondo2.PNG")
@@ -949,7 +1192,7 @@ Tendrán un código que prepara la base de datos para hacer los ejercicios. Ser�
 
 **Tarea 3**: Construir un gráfico que muestre el ingreso y el gasto p/c promedio, según zona (Metropolitina y resto de capitales regionales).
 
-
+¿Al terminar las tareas, notas algún patrón que se repite?
 
 ---
 
@@ -1028,7 +1271,7 @@ background-position: 100% 0%
 
 #Ejercicio 1
 
-&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-24-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-27-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -1038,7 +1281,7 @@ background-position: 100% 0%
 
 # Ejercicio 2
 
-&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-25-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-28-1.png" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -1049,7 +1292,7 @@ background-position: 100% 0%
 
 # Ejercicio 3
 
-&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-26-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-29-1.png" style="display: block; margin: auto;" /&gt;
 
 
 ---

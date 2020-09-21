@@ -365,7 +365,7 @@ head(guaguas, 2)
 
 --
 
-### Generemos un gráfico de barras con cantidad de nombres de mujeres y de hombres
+### Generemos un gráfico de barras con la cantidad de mujeres y hombres
 
 
 ---
@@ -476,8 +476,9 @@ background-position: 100% 0%
 
 
 ```{r, fig.align='center', fig.height=4, fig.width=5}
+options(scipen = "999")
 ggplot(data = sexo, aes(x = sexo, y = suma)) + 
-  geom_bar(stat = "identity") #<<
+  geom_bar(stat = "identity") #<< 
 ```
 
 --
@@ -485,6 +486,61 @@ ggplot(data = sexo, aes(x = sexo, y = suma)) +
 - `geom_bar`: capa de figura geométrica 
 
 - *identity*: le dice a ggplot que no queremos hacer nada con los datos, es decir, graficar la tabla sin modificaciones 
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# ¿Qué es exactamente identity?
+
+.center[
+<img src="https://media.giphy.com/media/a5viI92PAF89q/giphy.gif" width="200" />
+]
+
+--
+
+`geom_bar` por defecto llama a la función `stat_count`
+
+`stat_count` espera como input una sola variable 
+
+
+```{r, error=T}
+ggplot(data = sexo, aes(x = sexo, y = suma)) + 
+  geom_bar()
+
+```
+
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Un poco más sobre identity
+
+¿Qué creen que está pasando acá?
+
+```{r, fig.align='center', fig.height=3, fig.width=4}
+ggplot(data = sexo, aes(x = sexo)) + 
+  geom_bar()
+```
+
+--
+
+El problema es que nuestra base de datos no está ordenada de ese modo
+
+```{r, highlight.output=c(1, 3)}
+guaguas %>% 
+  filter(nombre == "Juan" & anio == 2010)
+```
+
+
+Tenemos para cada nombre un conteo. Ejemplo: María, 300  
+
 
 ---
 
@@ -499,7 +555,7 @@ Agreguemos una segunda capa
 ```{r, fig.align='center', fig.height=4, fig.width=5}
 ggplot(data = sexo, aes(x = sexo, y = suma)) + 
   geom_bar(stat = "identity") + 
-  geom_hline(yintercept = mean(sexo$suma)) #<<
+  geom_hline(aes(yintercept = mean(suma)) ) #<<
 ```
 
 --
@@ -540,12 +596,12 @@ Nombres de mujer más populares de 2019
 
 ```{r, fig.align='center', fig.height=4.5, fig.width=7}
 
-top3 <- guaguas %>% 
+top10 <- guaguas %>% 
   filter(anio == 2019 & sexo == "F") %>% 
   group_by(sexo) %>% 
   arrange(desc(n)) %>% 
   slice(1:10)
-ggplot(top3, aes(x =  fct_reorder(nombre, desc(n)) , y = n, fill = nombre)) + #<<
+ggplot(top10, aes(x =  fct_reorder(nombre, desc(n)) , y = n, fill = nombre)) + #<<
   geom_bar(stat = "identity")
 ```
 
@@ -573,6 +629,176 @@ guaguas %>%
   theme(plot.title = element_text(hjust = 0.5)) #<< 
 ```
 
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Un poco más sobre theme
+
+Existen variables internas que nos permiten acceder a los elementos del gráfico
+
+--
+
+Con `element_text` podemos modificar varias cosas
+
+.pull-left[
+
+
+.small[
+```{r plot-label, eval=FALSE}
+guaguas::guaguas %>% 
+  filter(nombre == "Salvador" & anio <= 1990) %>% 
+  ggplot(aes(x = anio, y = n, color = "coral")) +
+  geom_line() +
+  geom_vline(xintercept = 1971, linetype="dashed") +
+  labs(title="El nombre Salvador a lo largo de la historia",
+        x ="año", y = "frecuencia") + 
+  theme(plot.title = element_text(hjust = 0.5), #<<
+        axis.text.x = element_text(angle = 90)) #<< 
+```
+]
+
+]
+
+.pull-right[
+```{r plot-label-out, ref.label="plot-label", fig.height=3.5, fig.width=6,  echo=FALSE}
+```
+]
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+  
+# Un poco más sobre theme
+
+.pull-left[
+.small[
+```{r plot-label2, eval=FALSE}
+guaguas %>% 
+  filter(nombre == "Salvador" & anio <= 1990) %>% 
+  ggplot(aes(x = anio, y = n, color = "coral")) +
+  geom_line() +
+  geom_vline(xintercept = 1971, linetype="dashed") +
+  labs(title="El nombre Salvador a lo largo de la historia",
+      x ="año", y = "frecuencia") + 
+  theme(plot.title = element_text(hjust = 0.5), 
+       axis.text.x = element_text(angle = 90),
+       axis.title.x = element_text(color = "red")) #<< 
+```
+]
+]
+
+.pull-right[
+```{r plot-label2-out, ref.label="plot-label2", fig.height=3.5, fig.width=6,  echo=FALSE}
+```
+]
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+  
+# Un poco más sobre theme
+
+.pull-left[
+.small[
+```{r plot-label3, eval=FALSE}
+guaguas %>% 
+  filter(nombre == "Salvador" & anio <= 1990) %>% 
+  ggplot(aes(x = anio, y = n, color = "coral")) +
+  geom_line() +
+  geom_vline(xintercept = 1971, linetype="dashed") +
+  labs(title="El nombre Salvador a lo largo de la historia",
+       x ="año", y = "frecuencia") + 
+  theme(plot.title = element_text(hjust = 0.5), 
+        axis.text.x = element_text(angle = 90),
+        axis.title.x = element_text(color = "red"),
+        axis.text.y = element_text(face = "bold.italic")) #<< 
+```
+]
+]
+
+
+.pull-right[
+```{r plot-label3-out, ref.label="plot-label3", fig.height=3.5, fig.width=6,  echo=FALSE}
+```
+]
+
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+  
+# Un poco más sobre theme
+
+.pull-left[
+.small[
+```{r plot-label4, eval=FALSE}
+  guaguas %>% 
+    filter(nombre == "Salvador" & anio <= 1990) %>% 
+    ggplot(aes(x = anio, y = n, color = "coral")) +
+    geom_line() +
+    geom_vline(xintercept = 1971, linetype="dashed") +
+    labs(title="El nombre Salvador a lo largo de la historia",
+         x ="año", y = "frecuencia") + 
+    theme(plot.title = element_text(hjust = 0.5), 
+          axis.text.x = element_text(angle = 90),
+          axis.title.x = element_text(color = "red"),
+          axis.text.y = element_text(face = "bold.italic"),
+          legend.position = "none") #<< 
+```
+  ]
+]
+
+
+.pull-right[
+```{r plot-label4-out, ref.label="plot-label4", fig.height=3.5, fig.width=6,  echo=FALSE}
+```
+]
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+  
+# Un poco más sobre theme
+
+.pull-left[
+.small[
+```{r plot-label5, eval=FALSE}
+  guaguas %>% 
+    filter(nombre == "Salvador" & anio <= 1990) %>% 
+    ggplot(aes(x = anio, y = n, color = "coral")) +
+    geom_line() +
+    geom_vline(xintercept = 1971, linetype="dashed") +
+    labs(title="El nombre Salvador a lo largo de la historia",
+         x ="año", y = "frecuencia") + 
+    theme(plot.title = element_text(hjust = 0.5), 
+          axis.text.x = element_text(angle = 90),
+          axis.title.x = element_text(color = "red"),
+          axis.text.y = element_text(face = "bold.italic"),
+          legend.position =  "bottom", #<<
+          legend.background = element_rect(fill = "darkgray") ) #<< 
+```
+  ]
+]
+
+
+.pull-right[
+```{r plot-label5-out, ref.label="plot-label5", fig.height=3.5, fig.width=6,  echo=FALSE}
+```
+]
+
+
+
 
 ---
 
@@ -584,7 +810,7 @@ background-position: 100% 0%
 
 ```{r, fig.align='center', fig.height=5, fig.width=7.5}
 guaguas %>% 
-  filter(nombre %in% c("Milenka", "Branco", "Salomé", "Jovanka"), anio > 1980) %>% 
+  filter(nombre %in% c("Milenka", "Branco", "Salomé", "Jovanka") & anio > 1980) %>% 
   ggplot(aes(anio, n, color = nombre)) + #<<
   geom_point() + #<<
   geom_line() +
@@ -889,7 +1115,7 @@ Tendrán un código que prepara la base de datos para hacer los ejercicios. Ser�
 
 **Tarea 3**: Construir un gráfico que muestre el ingreso y el gasto p/c promedio, según zona (Metropolitina y resto de capitales regionales).
 
-
+¿Al terminar las tareas, notas algún patrón que se repite?
 
 ---
 
