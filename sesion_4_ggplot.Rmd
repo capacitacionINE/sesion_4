@@ -26,11 +26,13 @@ class: center, middle
 <img src="imagenes/logo_portada2.png" width="200" />
 
 
-## Capacitación en R
+## Capacitación en R y herramientas de productividad
 
-## Visualización usando ggplot
+## Proyecto Estratégico Servicios Compartidos para la Producción Estadística
 
-### septiembre 2020
+## Visualización con ggplot2
+
+### Septiembre 2020
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
@@ -432,11 +434,11 @@ Echaremos mano a lo aprendido en sesiones anteriores
 
 ```{r, message=FALSE, warning=FALSE}
 library(tidyverse)
-sexo <- guaguas %>% 
+tabla <- guaguas %>% 
   group_by(sexo) %>% 
   summarise(suma = sum(n))
 
-sexo
+tabla
 
 ```
 
@@ -455,7 +457,7 @@ Siempre comenzaremos con la función ggplot
 --
 
 ```{r, fig.align='center', fig.height=3, fig.width=4}
-ggplot(data = sexo, aes(x = sexo, y = suma)) 
+ggplot(data = tabla, aes(x = sexo, y = suma)) 
 ```
 --
 
@@ -477,7 +479,7 @@ background-position: 100% 0%
 
 ```{r, fig.align='center', fig.height=4, fig.width=5}
 options(scipen = "999")
-ggplot(data = sexo, aes(x = sexo, y = suma)) + 
+ggplot(data = tabla, aes(x = sexo, y = suma)) + 
   geom_bar(stat = "identity") #<< 
 ```
 
@@ -507,7 +509,7 @@ background-position: 100% 0%
 
 
 ```{r, error=T}
-ggplot(data = sexo, aes(x = sexo, y = suma)) + 
+ggplot(data = tabla, aes(x = sexo, y = suma)) + 
   geom_bar()
 
 ```
@@ -522,10 +524,12 @@ background-position: 100% 0%
 
 # Un poco más sobre identity
 
+Las 2 barras tienen la misma altura
+
 ¿Qué creen que está pasando acá?
 
-```{r, fig.align='center', fig.height=3, fig.width=4}
-ggplot(data = sexo, aes(x = sexo)) + 
+```{r, fig.align='center', fig.height=2.4, fig.width=3.5}
+ggplot(data = tabla, aes(x = sexo)) + 
   geom_bar()
 ```
 
@@ -533,7 +537,7 @@ ggplot(data = sexo, aes(x = sexo)) +
 
 El problema es que nuestra base de datos no está ordenada de ese modo
 
-```{r, highlight.output=c(1, 3)}
+```{r, highlight.output=c(2, 4)}
 guaguas %>% 
   filter(nombre == "Juan" & anio == 2010)
 ```
@@ -553,7 +557,7 @@ background-position: 100% 0%
 Agreguemos una segunda capa
 
 ```{r, fig.align='center', fig.height=4, fig.width=5}
-ggplot(data = sexo, aes(x = sexo, y = suma)) + 
+ggplot(data = tabla, aes(x = sexo, y = suma)) + 
   geom_bar(stat = "identity") + 
   geom_hline(aes(yintercept = mean(suma)) ) #<<
 ```
@@ -570,7 +574,7 @@ background-position: 100% 0%
 
 # Ejercicio rápido
 
-Creemos un gráfico de líneas que contenga la suma de personas para cada año
+Creemos un gráfico de líneas que contenga la suma de guaguas inscritas para cada año
 
 *Pista*: la capa para crear un gráfico de líneas es `geom_line` 
 
@@ -601,9 +605,32 @@ top10 <- guaguas %>%
   group_by(sexo) %>% 
   arrange(desc(n)) %>% 
   slice(1:10)
-ggplot(top10, aes(x =  fct_reorder(nombre, desc(n)) , y = n, fill = nombre)) + #<<
+ggplot(top10, aes(x = nombre, y = n, fill = nombre)) + #<<
   geom_bar(stat = "identity")
 ```
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Agregando más atributos
+
+Para ordenar de mayor a menor, puedo usar `fct_reorder`
+
+```{r, fig.align='center', fig.height=4.5, fig.width=7}
+top10 <- guaguas %>% 
+  filter(anio == 2019 & sexo == "F") %>% 
+  group_by(sexo) %>% 
+  arrange(desc(n)) %>% 
+  slice(1:10)
+ggplot(top10, aes(x = fct_reorder(nombre, desc(n)) , y = n, fill = nombre)) + #<<
+  geom_bar(stat = "identity")
+```
+
+
+
 
 ---
 
@@ -613,7 +640,27 @@ background-position: 100% 0%
 
 # Agregando más atributos
 
+Pueden manejar el color con el parámetro [color](http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf) 
+
 Con la función `labs` podemos agregar etiquetas a nuestro gráfico
+
+
+```{r, fig.align='center', fig.height=3.5, fig.width=6}
+guaguas %>% 
+  filter(nombre == "Salvador" & anio <= 1990) %>% 
+  ggplot(aes(x = anio, y = n, color = "coral")) + #<<
+  geom_line() +
+  geom_vline(xintercept = 1971, linetype="dashed") +
+  labs(title="El nombre Salvador a lo largo de la historia", #<<
+        x ="año", y = "frecuencia")  #<<
+```
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Agregando más atributos
 
 La función `theme` controla características generales del gráfico: fuente, posición, tamaño de letra, etc. 
 
@@ -624,10 +671,12 @@ guaguas %>%
   ggplot(aes(x = anio, y = n, color = "coral")) +
   geom_line() +
   geom_vline(xintercept = 1971, linetype="dashed") +
-  labs(title="El nombre Salvador a lo largo de la historia", #<<
-        x ="año", y = "frecuencia") + #<<
+  labs(title="El nombre Salvador a lo largo de la historia", 
+        x ="año", y = "frecuencia") + 
   theme(plot.title = element_text(hjust = 0.5)) #<< 
 ```
+
+
 
 ---
 
@@ -699,6 +748,8 @@ guaguas %>%
 ]
 
 
+Con `color` manejamos el color del texto
+
 ---
 background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
@@ -730,6 +781,7 @@ guaguas %>%
 ```
 ]
 
+Con `face` manejamos el tipo de letra (plain, italic, bold o bold.italic)
 
 
 ---
@@ -764,6 +816,8 @@ background-position: 100% 0%
 ```
 ]
 
+Con `legend.position` manejamos la posición de la leyenda. En este caso decidimos sacarla con `none` 
+
 ---
 background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
@@ -797,7 +851,7 @@ background-position: 100% 0%
 ```
 ]
 
-
+Con `legend.background` manejamos el fondo de la leyenda. En este caso usamos `darkgray` 
 
 
 ---
@@ -827,7 +881,7 @@ background-position: 100% 0%
 
 # Segundo dataset
 
-Base de datos que contiene datos de pib y esperanza de vida
+Base de datos que contiene datos de PIB y esperanza de vida por país y quinquenio
 
 ```{r, warning=F}
 life <-  gapminder::gapminder
@@ -865,7 +919,7 @@ background-position: 100% 0%
 
 Agreguemos una variable para indicar el continente de cada país
 
-*Pista*: 1) la columna continent contiene esta información. La variable `color` puede ser de ayuda 
+*Pista*: la columna continent contiene esta información. El parámetro `color` puede ser de ayuda 
 
 --
 
@@ -884,16 +938,21 @@ background-position: 100% 0%
 
 Agreguemos otra variable para indicar la población de cada país
 
-*Pista*: La variable `size` puede ser de gran ayuda
+*Pista*: El parámetro `size` puede ser de gran ayuda
 
 --
 
 ```{r, fig.align='center', fig.height=5, fig.width=6.5}
 ggplot(life, aes(x = lifeExp, y = log(gdpPercap), color = continent, size = pop) ) + 
   geom_point() +
-  scale_size(range = c(1, 7))
+  scale_size(range = c(1, 7)) #<<
 
 ```
+
+--
+
+Puede ser útil agregar la capa `scale_size` para manejar el tamaño de los círculos
+
 
 ---
 background-image: url("imagenes/fondo2.PNG")
@@ -908,8 +967,8 @@ background-position: 100% 0%
 
 ```{r, fig.align='center', fig.height=4.8, fig.width=6.5}
 ggplot(life, aes(x = lifeExp, y = log(gdpPercap), color = continent, size = pop) ) + 
-  geom_point(alpha = 0.6) +
-  scale_size(range = c(1, 7))
+  geom_point(alpha = 0.6) + #<<
+  scale_size(range = c(1, 5))
 ```
 
 ---
@@ -919,12 +978,14 @@ background-position: 100% 0%
 
 # Problema: los puntos se superponen
 
+`geom_jitter` agrega un ruido aleatorio
+
 
 ```{r, fig.align='center', fig.height=5, fig.width=6.5}
 ggplot(life, aes(x = lifeExp, y = log(gdpPercap), color = continent, size = pop) ) + 
   geom_point() +
-  geom_jitter(width = 0.3) +
-  scale_size(range = c(1, 7))
+  geom_jitter(width = 0.5) +
+  scale_size()
 ```
 
 ---
@@ -939,7 +1000,7 @@ Con `facet_wrap` generamos un panel para cada categoría de la variable
 ```{r, fig.align='center', fig.height=4, fig.width=6.5}
 ggplot(life, aes(x = lifeExp, y = log(gdpPercap), color = continent, size = pop) ) + 
   geom_point() +
-  scale_size(range = c(1, 7)) +
+  scale_size(range = c(1, 5)) +
   facet_wrap(~continent) #<<
 
 
@@ -1018,7 +1079,7 @@ Podemos incluir movimiento para mejorar la percepción de cómo cambia la relaci
 
 
 ```{r, fig.align='center'}
-#install.packages("gifski")
+#install.packages("gifski") puede ser necesario
 library(gganimate)
 p <- ggplot(gapminder::gapminder, aes(gdpPercap, lifeExp, 
                            color = continent)) +
@@ -1078,7 +1139,7 @@ background-position: 100% 0%
 
 # Para seguir aprendiendo...
 
-[Elegant Graphics for Data Analysis (Hadly Wickham)](https://ggplot2-book.org/index.html)
+[Elegant Graphics for Data Analysis (Hadley Wickham)](https://ggplot2-book.org/index.html)
 
 [Tutorial muy claro de ggplot](http://r-statistics.co/Complete-Ggplot2-Tutorial-Part1-With-R-Code.html)
 
@@ -1092,9 +1153,9 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Tarea para la casa
+# Ejercicio para la casa
 
-Vamos a trabajar con datos de la EPF 
+Vamos a trabajar con datos de la [EPF](https://www.ine.cl/estadisticas/sociales/ingresos-y-gastos/encuesta-de-presupuestos-familiares) (versión csv) 
 
 La idea es practicar calculando algunos datos no representativos. 
 
@@ -1109,13 +1170,13 @@ Tendrán un código que prepara la base de datos para hacer los ejercicios. Ser�
 
 --
 
-**Tarea 1**: Construir un gráfico que muestre el ingreso y el gasto p/c promedio, según quintil de ingreso.
+**Ejercicio 1**: Construir un gráfico que muestre el ingreso y el gasto p/c promedio, según quintil de ingreso.
 
-**Tarea 2**: Construir un gráfico que muestre el ingreso y el gasto p/c promedio, según sexo del jefe de hogar.
+**Ejercicio 2**: Construir un gráfico que muestre el ingreso y el gasto p/c promedio, según sexo del jefe de hogar.
 
-**Tarea 3**: Construir un gráfico que muestre el ingreso y el gasto p/c promedio, según zona (Metropolitina y resto de capitales regionales).
+**Ejercicio 3**: Construir un gráfico que muestre el ingreso y el gasto p/c promedio, según zona (Metropolitina y resto de capitales regionales).
 
-¿Al terminar las tareas, notas algún patrón que se repite?
+¿Al terminar las ejercicios, notas algún patrón que se repite?
 
 ---
 
@@ -1161,19 +1222,49 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Pistas para la tarea
+# Pistas para los ejercicios
 
+Van a trabajar con una base a nivel de hogar (15.239 observaciones)
 
 **Pista 1**: Antes de graficar, debes preparar los datos y llevarlos a una estructura *tidy*. Usar la función `pivot_longer` es una buena idea.
 
-```{r, echo=F, warning=F }
+
+```{r, echo=F, warning=F, highlight.output=c(2, 4)}
+epf2 %>%
+  group_by(quintil) %>% 
+  summarise_at(vars(gastot_hd_pc, ing_disp_hog_hd_pc), funs(mean))
+```
+
+
+```{r, echo=F, warning=F, highlight.output=c(2, 4, 5) }
 epf2 %>%
   group_by(quintil) %>% 
   summarise_at(vars(gastot_hd_pc, ing_disp_hog_hd_pc), funs(mean)) %>% 
-  pivot_longer(-quintil, names_to = "tipo", values_to = "valor") 
+  pivot_longer(-quintil, names_to = "tipo", values_to = "valor") %>% 
+  slice(1:6)
 ```
 
-**Pista 2**: Para generar varias columnas en una misma categoría, puedes usar el argumento `position = "dodge"` dentro de `geom_bar`
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Pistas para los ejercicios
+
+
+**Pista 2**: Para apilar columnas hacia el lado, puedes usar el argumento `position = "dodge"` dentro de `geom_bar`
+
+Por defecto, el argumento `fill` no genera barras hacia el lado
+
+```{r, eval=T, echo=F, fig.align="center", fig.height=4, fig.width=6}
+epf2 %>%
+  group_by(quintil) %>% 
+  summarise_at(vars(gastot_hd_pc, ing_disp_hog_hd_pc), funs(mean)) %>% 
+  pivot_longer(-quintil, names_to = "tipo", values_to = "valor") %>% 
+  ggplot(aes(quintil, valor, fill = tipo )) +
+  geom_bar(stat = "identity")
+```
+
 
 ---
 
@@ -1182,6 +1273,9 @@ background-size: contain;
 background-position: 100% 0%
 
 #Ejercicio 1
+
+<br>
+<br>
 
 ```{r, eval=T, echo=F, fig.align="center", fig.height=5, fig.width=7.5}
 
@@ -1206,6 +1300,9 @@ background-position: 100% 0%
 
 # Ejercicio 2
 
+<br>
+<br>
+
 ```{r, eval=T, echo=F, fig.align="center", fig.height=5, fig.width=7.5}
 #Construir gráfico para ingreso y gasto, según zona
 epf2 %>%
@@ -1225,6 +1322,9 @@ background-size: contain;
 background-position: 100% 0%
 
 # Ejercicio 3
+
+<br>
+<br>
 
 ```{r, eval=T, echo=F, fig.align="center", fig.height=5, fig.width=7.5}
 #Construir gráfico para ingreso y gasto, según zona
@@ -1246,8 +1346,13 @@ class: center, middle
 <img src="imagenes/logo_portada2.png" width="200" />
 
 
+## Capacitación en R y herramientas de productividad
 
-## Gracias
+## Proyecto Estratégico Servicios Compartidos para la Producción Estadística
+
+## Visualización con ggplot2
+
+### Septiembre 2020
 
 
 
