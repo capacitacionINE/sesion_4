@@ -4,7 +4,7 @@
     <title>Proceso de acompañamiento coyuntural y automatización de la Encuesta Nacional de Empleo</title>
     <meta charset="utf-8" />
     <meta name="author" content="" />
-    <meta name="date" content="2020-09-22" />
+    <meta name="date" content="2020-11-16" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
   <body>
@@ -27,8 +27,11 @@ class: center, middle
 
 ## Visualización con ggplot2
 
-### Septiembre 2020
+### Noviembre 2020
 
+.center[
+Klaus Lehmann, Ignacio Agloni y Juan Medrano
+]
 
 
 
@@ -1191,6 +1194,137 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
+# Ejemplo INE
+
+### Apliquemos todo lo aprendido a un caso concreto del INE 
+
+--
+
+La institución está transitando hacia sistemas automatizados de codificación
+
+--
+
+Ningún sistema es perfecto 
+
+--
+
+Típicamente, existe un porcentaje de error que debemos minimizar
+
+
+.center[
+&lt;img src="https://media.giphy.com/media/EizPK3InQbrNK/giphy.gif" width="300" /&gt;
+]
+
+--
+
+Veamos el ejemplo de la CCIF
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Ejemplo INE
+
+La EPF usa un clasificador llamado CCIF, que tiene más de 1.000 categorías
+
+--
+
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-27-1.png" style="display: block; margin: auto;" /&gt;
+
+--
+
+.pull-left[
+
+### ¿Cómo podemos mejorar el resultado?
+
+]
+
+.pull-right[
+&lt;img src="https://media.giphy.com/media/3o7buirYcmV5nSwIRW/giphy.gif" width="180" /&gt;
+]
+
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Ejemplo INE
+
+### Idea: Puedo codificar los registros difíciles a mano y dejarle los fáciles a mi sistema
+
+.center[
+&lt;img src="https://media.giphy.com/media/LrGHJGtTbT7PO/giphy.gif" width="400" /&gt;
+]
+
+--
+
+### Estrategia mixta: parte automática y parte manual
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Ejemplo INE
+
+.center[
+&lt;img src="imagenes/experimento.png" width="300" /&gt;
+]
+
+
+Receta:
+
+- **paso 1:** Rankear los registros de mayor a menor dificultad
+
+--
+
+- **paso 2:** Elegir un punto de corte
+
+--
+
+- **paso 3:** Codificamos automáticamente solo lo que está sobre el punto de corte (más fáciles)
+
+--
+
+- **paso 4:** Calcular el error
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Ejemplo INE
+
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-28-1.png" style="display: block; margin: auto;" /&gt;
+
+### Si clasificamos el 5% a mano, mejoramos aproximadamente 3 pp
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Ejemplo INE
+
+### ¿Cuál es el resultado a nivel de categoría?
+
+--
+
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-29-1.gif" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
 # Más ejemplos para motivar
 
 
@@ -1255,11 +1389,9 @@ Tendrán un código que prepara la base de datos para hacer los ejercicios. Ser�
 
 **Ejercicio 1**: Construir un gráfico que muestre el ingreso y el gasto p/c promedio, según quintil de ingreso.
 
-**Ejercicio 2**: Construir un gráfico que muestre el ingreso y el gasto p/c promedio, según sexo del jefe de hogar.
+**Ejercicio 2**: Construir un gráfico que muestre el ingreso y el gasto p/c promedio, según sexo del jefe de hogar. Puede ser útil convertir a factor la variable sexo, antes de graficar.
 
-**Ejercicio 3**: Construir un gráfico que muestre el ingreso y el gasto p/c promedio, según zona (Metropolitina y resto de capitales regionales).
-
-¿Al terminar las ejercicios, notas algún patrón que se repite?
+**Ejercicio 3**: Construir un gráfico que muestre el ingreso y el gasto p/c promedio, según zona (Metropolitina y resto de capitales regionales). Puede ser útil convertir a factor la variable zona, antes de graficar.
 
 ---
 
@@ -1351,7 +1483,7 @@ background-position: 100% 0%
 
 Por defecto, el argumento `fill` no genera barras hacia el lado
 
-&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-30-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-33-1.png" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -1365,7 +1497,7 @@ background-position: 100% 0%
 &lt;br&gt;
 &lt;br&gt;
 
-&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-31-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-34-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -1378,7 +1510,7 @@ background-position: 100% 0%
 &lt;br&gt;
 &lt;br&gt;
 
-&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-32-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-35-1.png" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -1392,7 +1524,7 @@ background-position: 100% 0%
 &lt;br&gt;
 &lt;br&gt;
 
-&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-33-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="sesion_4_ggplot_files/figure-html/unnamed-chunk-36-1.png" style="display: block; margin: auto;" /&gt;
 
 
 ---
