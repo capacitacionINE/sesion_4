@@ -32,8 +32,11 @@ class: center, middle
 
 ## Visualización con ggplot2
 
-### Septiembre 2020
+### Noviembre 2020
 
+.center[
+Klaus Lehmann, Ignacio Agloni y Juan Medrano
+]
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
 knitr::opts_chunk$set(message = FALSE) 
@@ -1108,6 +1111,220 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
+# Ejemplo INE
+
+### Apliquemos todo lo aprendido a un caso concreto del INE 
+
+--
+
+La institución está transitando hacia sistemas automatizados de codificación
+
+--
+
+Ningún sistema es perfecto 
+
+--
+
+Típicamente, existe un porcentaje de error que debemos minimizar
+
+
+.center[
+<img src="https://media.giphy.com/media/EizPK3InQbrNK/giphy.gif" width="300" />
+]
+
+--
+
+Veamos el ejemplo de la CCIF
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Ejemplo INE
+
+La EPF usa un clasificador llamado CCIF, que tiene más de 1.000 categorías
+
+--
+
+```{r, echo=FALSE, fig.align='center', fig.height=4, fig.width=6.5, warning=FALSE}
+library(readr);library(tidyverse)
+pred <- read_csv("data/pred_red.csv")
+
+pred <- pred %>% 
+  filter(!is.na(real)) %>% # sacar un registro que no hace match
+  rename(prob_max = prob)
+
+
+pred %>% 
+  mutate(coincide = if_else(predicho == real, 1, 0)) %>% 
+  count(coincide) %>% 
+  mutate(porcentaje = round(n / sum(n) * 100, 2)) %>% 
+  ggplot(aes(x = as.factor(coincide), y = porcentaje, fill = as.factor(coincide))) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label=porcentaje), position = position_dodge(width=0.9), vjust = -0.4) +
+  scale_x_discrete(breaks=c(0, 1),
+                   labels=c("No coincide", "Coincide")) +
+  scale_y_continuous(breaks =  seq(0, 95, 10)) +
+  labs(title = "Rendimiento clasificación automática") +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = "none",
+        axis.title.x = element_blank()) 
+
+
+
+```
+
+--
+
+.pull-left[
+
+### ¿Cómo podemos mejorar el resultado?
+
+]
+
+.pull-right[
+<img src="https://media.giphy.com/media/3o7buirYcmV5nSwIRW/giphy.gif" width="180" />
+]
+
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Ejemplo INE
+
+### Idea: Puedo codificar los registros difíciles a mano y dejarle los fáciles a mi sistema
+
+.center[
+<img src="https://media.giphy.com/media/LrGHJGtTbT7PO/giphy.gif" width="400" />
+]
+
+--
+
+### Estrategia mixta: parte automática y parte manual
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Ejemplo INE
+
+.center[
+<img src="imagenes/experimento.png" width="300" />
+]
+
+
+Receta:
+
+- **paso 1:** Rankear los registros de mayor a menor dificultad
+
+--
+
+- **paso 2:** Elegir un punto de corte
+
+--
+
+- **paso 3:** Codificamos automáticamente solo lo que está sobre el punto de corte (más fáciles)
+
+--
+
+- **paso 4:** Calcular el error
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Ejemplo INE
+
+```{r, echo=F, fig.align='center', fig.height=6, fig.width=7}
+source("helpers_analisis.R")
+
+cortes <- map(seq(0, 0.98, 0.02), ~cortar_evaluar(.x, pred) %>% 
+      mutate(corte = .x)) %>% 
+  reduce(bind_rows) %>% 
+  mutate(porcentaje_auto = total / completa,
+         porcentaje_error = 1 - por_acierto,
+         porcentaje_manual = 1 - porcentaje_auto)
+  
+# Graficar relación entre error y porcentaje codificado automáticamente
+cortes %>% 
+  ggplot(aes(x = porcentaje_manual * 100, y = porcentaje_error * 100  )) +
+  geom_line() +
+  geom_point() +
+  geom_vline(xintercept = 5, color = "red", linetype = "dashed") +
+  scale_x_continuous(breaks = seq(0, 90, 5)) +
+  scale_y_continuous(breaks = seq(0, 15, 1)) +
+  labs(y = "% de error", x = "% codificado manualmente")  
+
+```
+
+### Si clasificamos el 5% a mano, mejoramos aproximadamente 3 pp
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Ejemplo INE
+
+### ¿Cuál es el resultado a nivel de categoría?
+
+--
+
+```{r, echo=FALSE, fig.align='center' }
+library(gganimate)
+cortes_clase <- map(c(0, 0.98), ~cortar_evaluar(.x, pred, "si") %>% #seq(0.0, 0.99, 0.01) 
+                      mutate(corte = !!enquo(.x) )) %>% 
+  reduce(.f = bind_rows)
+
+
+clases_no_borradas <- cortes_clase %>% 
+  group_by(real) %>% 
+  mutate(contar = n()) %>% 
+  ungroup() %>% 
+  filter(contar == max(contar)) %>% 
+  mutate(log_total = log10(total),
+         corte = as.integer(corte * 100),
+         d = substr(codigo, 1, 2)) %>% 
+  group_by(real) %>% 
+  arrange(desc(corte)) %>% 
+  mutate(probar = first(por_acierto) - last(por_acierto)) %>% 
+  ungroup() %>% 
+  mutate(disminuye = if_else(probar < 0, 1, 0),
+         porcentaje_manual = if_else(corte == 0, 0, 20))
+         
+p <- clases_no_borradas %>%
+  ggplot(aes(y = por_acierto * 100, x = d, alpha = 0.2, color = d, size = completa)) +
+  geom_jitter(alpha = 0.5) +
+  scale_size(range = c(1, 10)) +
+  labs(y = "porcentaje de acierto") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.title.x = element_blank(),
+        legend.position = "none") 
+  
+
+p +  
+  transition_states(states = porcentaje_manual)  + 
+  labs(title = "Porcentaje codificado manualmente: {closest_state}") 
+
+```
+
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
 # Más ejemplos para motivar
 
 
@@ -1172,11 +1389,9 @@ Tendrán un código que prepara la base de datos para hacer los ejercicios. Ser�
 
 **Ejercicio 1**: Construir un gráfico que muestre el ingreso y el gasto p/c promedio, según quintil de ingreso.
 
-**Ejercicio 2**: Construir un gráfico que muestre el ingreso y el gasto p/c promedio, según sexo del jefe de hogar.
+**Ejercicio 2**: Construir un gráfico que muestre el ingreso y el gasto p/c promedio, según sexo del jefe de hogar. Puede ser útil convertir a factor la variable sexo, antes de graficar.
 
-**Ejercicio 3**: Construir un gráfico que muestre el ingreso y el gasto p/c promedio, según zona (Metropolitina y resto de capitales regionales).
-
-¿Al terminar las ejercicios, notas algún patrón que se repite?
+**Ejercicio 3**: Construir un gráfico que muestre el ingreso y el gasto p/c promedio, según zona (Metropolitina y resto de capitales regionales). Puede ser útil convertir a factor la variable zona, antes de graficar.
 
 ---
 
